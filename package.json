@@ -1,0 +1,20 @@
+{
+  "name": "chat-app-backend",
+  "version": "1.0.0",
+  "main": "chat.js",
+  "type": "module",
+  "scripts": {
+    "server": "nodemon chat.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
