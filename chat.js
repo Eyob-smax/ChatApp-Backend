@@ -7,7 +7,7 @@ import cors from "cors";
 import Post from "./database.js";
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "https://chat-app-frontend-vert-seven.vercel.app/" }));
 app.use(express.json());
 const httpServer = createServer(app);
 
