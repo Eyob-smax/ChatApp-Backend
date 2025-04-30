@@ -7,7 +7,14 @@ import cors from "cors";
 import Post from "./database.js";
 
 const app = express();
-app.use(cors({ origin: "https://chat-app-frontend-vert-seven.vercel.app/" }));
+app.use(
+  cors({
+    origin: [
+      "https://chat-app-frontend-vert-seven.vercel.app/",
+      "http://localhost:5173",
+    ],
+  })
+);
 app.use(express.json());
 const httpServer = createServer(app);
 
@@ -25,8 +32,8 @@ const io = new Server(httpServer, {
 const typingUsers = new Set();
 
 io.on("connection", (socket) => {
-  socket.on("new-message", async (data) => {
-    socket.broadcast.emit("new-message", data);
+  socket.on("new-message", async ({ messageId, newMessage }) => {
+    socket.broadcast.emit("new-message", { messageId, newMessage });
 
     if (typingUsers.has(socket.id)) {
       typingUsers.delete(socket.id);
