@@ -5,7 +5,7 @@ dotenv.config();
 (async () => {
   try {
     await mongoose.connect(
-      "mongodb://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/chatApp"
+      "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net//chatApp"
     );
     console.log("✅Connected to DB successfully");
   } catch (err) {
