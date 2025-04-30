@@ -15,6 +15,7 @@ dotenv.config();
 
 const postSchema = new mongoose.Schema({
   username: String,
+  messageId: String,
   message: String,
   time: String,
   isUser: Boolean,

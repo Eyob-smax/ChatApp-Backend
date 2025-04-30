@@ -12,6 +12,7 @@ app.use(
     origin: [
       "https://chat-app-frontend-vert-seven.vercel.app/",
       "http://localhost:5173",
+      "http://127.0.0.1:5173",
     ],
   })
 );
@@ -100,16 +101,17 @@ app.get("/messages", async (req, res) => {
   }
 });
 
-app.delete("/delete-message/:id", async (req, res) => {
-  const { id } = req.params;
+app.get("/delete-message/:messageId", async (req, res) => {
+  const { messageId } = req.params;
   try {
-    if (!id) {
+    if (!messageId) {
       return res
         .status(400)
         .json({ success: false, message: "ID is required" });
     }
-    const message = await Post.findByIdAndDelete(id);
-    if (!message) {
+    const message = await Post.deleteOne({ messageId: messageId });
+
+    if (!message.acknowledged && message.deletedCount === 0) {
       return res
         .status(404)
         .json({ success: false, message: "Message not found" });
@@ -134,22 +136,23 @@ app.delete("/delete-all-messages", async (req, res) => {
 });
 
 app.put("/edit-message", async (req, res) => {
-  const { editedText, id } = req.body;
+  const { messageId, editedText } = req.body;
   try {
-    if (!editedText || !id) {
+    if (!editedText || !messageId) {
       return res
         .status(404)
         .json({ success: false, message: "Inclomplete fields" });
     }
-    const message = await Post.findByIdAndUpdate(id, {
-      message: editedText,
-      edited: true,
-    });
-    if (!message) {
+    const message = await Post.updateOne(
+      { messageId: messageId },
+      { $set: { message: editedText } }
+    );
+    if (!message.acknowledged && message.modifiedCount === 0) {
       return res
         .status(404)
         .json({ success: false, message: "Message not found" });
     }
+
     res.status(200).json({ success: true, message: "Message edited" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
