@@ -35,11 +35,18 @@ const typingUsers = new Set();
 io.on("connection", (socket) => {
   socket.on("new-message", async ({ messageId, newMessage }) => {
     socket.broadcast.emit("new-message", { messageId, newMessage });
-
     if (typingUsers.has(socket.id)) {
       typingUsers.delete(socket.id);
       socket.broadcast.emit("stopTyping", { userId: socket.id });
     }
+  });
+
+  socket.on("edit-message", ({ id, editedText }) => {
+    socket.broadcast.emit("edit-message", { id, editedText });
+  });
+
+  socket.on("delete-message", ({ id }) => {
+    socket.broadcast.emit("delete-message", { id });
   });
 
   socket.on("typing", () => {
@@ -128,7 +135,7 @@ app.get("/delete-message/:messageId", async (req, res) => {
 app.delete("/delete-all-messages", async (req, res) => {
   try {
     const { username } = req.body;
-    await Post.deleteMany({ username });
+    await Post.deleteMany({});
     res.status(200).json({ success: true, message: "All messages deleted" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -145,7 +152,7 @@ app.put("/edit-message", async (req, res) => {
     }
     const message = await Post.updateOne(
       { messageId: messageId },
-      { $set: { message: editedText } }
+      { $set: { message: editedText, edited: true } }
     );
     if (!message.acknowledged && message.modifiedCount === 0) {
       return res
